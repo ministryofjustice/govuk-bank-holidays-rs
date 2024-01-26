@@ -1,0 +1,48 @@
+[package]
+name = "govuk-bank-holidays"
+version = "0.1.0"
+description = "Library for loading the official list of bank holidays in the United Kingdom"
+authors = ["ushkarev <ushkarev@users.noreply.github.com>"]
+repository = "https://github.com/ministryofjustice/govuk-bank-holidays-rs"
+categories = ["date-and-time", "localization"]
+keywords = ["bank-holiday", "united-kingdom"]
+license = "MIT"
+edition = "2021"
+rust-version = "1.75"
+exclude = [
+    ".editorconfig",
+    ".github/*",
+    "Justfile",
+]
+
+[features]
+default = ["chrono"]
+chrono = ["dep:chrono"]
+time = ["dep:time"]
+
+[dependencies]
+chrono = { version = "^0.4", features = ["serde"], optional = true }
+reqwest = { version = "^0.11", features = ["json"] }
+serde = { version = "^1.0", features = ["derive"] }
+serde_json = "^1.0"
+thiserror = "^1.0"
+time = { version = "^0.3", features = ["local-offset", "serde-human-readable"], optional = true }
+tracing = "^0.1"
+
+[dev-dependencies]
+tokio = { version = "^1.35", features = ["macros", "rt-multi-thread", "test-util", "tracing"] }
+tracing-subscriber = { version = "^0.3", features = ["env-filter", "json", "local-time"] }
+
+[lints.rust]
+future_incompatible = "warn"
+nonstandard_style = "warn"
+missing_docs = "warn"
+rust_2018_idioms = "warn"
+unused = "warn"
+unused_import_braces = "warn"
+unused_must_use = "deny"
+
+[lints.clippy]
+await_holding_lock = "deny"
+dbg_macro = "deny"
+str_to_string = "warn"
