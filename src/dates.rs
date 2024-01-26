@@ -131,7 +131,7 @@ impl Date {
     /// Today’s date.
     #[cfg(feature = "time")]
     pub fn today() -> Date {
-        time::OffsetDateTime::now_local().expect("Cannot get now in local timezone").date().into()
+        time::OffsetDateTime::now_local().expect("cannot get now in local timezone").date().into()
     }
 
     /// Create a date from day, month and year integers.
@@ -216,9 +216,9 @@ mod tests {
     #[test]
     fn dates() {
         let expected = Date::try_from_components(2023, 2, 3)
-            .expect("Date could not be created");
+            .expect("date should be valid");
         let parsed: Date = serde_json::from_value(serde_json::Value::String("2023-02-03".to_owned()))
-            .expect("Date could not be parsed");
+            .expect("date should be valid");
         assert_eq!(parsed, expected);
 
         let end_of_january = parsed.previous_day().previous_day().previous_day();
@@ -227,5 +227,37 @@ mod tests {
         assert_eq!(end_of_january.day(), 31);
         assert_eq!(end_of_january.weekday(), Weekday::Tuesday);
         assert_eq!(end_of_january.into_components(), (2023, 1, 31));
+    }
+
+    #[cfg(feature = "chrono")]
+    #[test]
+    fn chrono() {
+        let date = DateImpl::from_ymd_opt(2024, 1, 26)
+            .expect("date should be valid");
+        let date: Date = date.into();
+        assert_eq!(date.year(), 2024);
+        assert_eq!(date.month(), 1);
+        assert_eq!(date.day(), 26);
+        let date: DateImpl = date.into();
+        assert_eq!(date.year(), 2024);
+        assert_eq!(date.month(), 1);
+        assert_eq!(date.day(), 26);
+    }
+
+    #[cfg(feature = "time")]
+    #[test]
+    fn time() {
+        use time::Month;
+
+        let date = DateImpl::from_calendar_date(2024, Month::January, 26)
+            .expect("date should be valid");
+        let date: Date = date.into();
+        assert_eq!(date.year(), 2024);
+        assert_eq!(date.month(), 1);
+        assert_eq!(date.day(), 26);
+        let date: DateImpl = date.into();
+        assert_eq!(date.year(), 2024);
+        assert_eq!(date.month(), Month::January);
+        assert_eq!(date.day(), 26);
     }
 }

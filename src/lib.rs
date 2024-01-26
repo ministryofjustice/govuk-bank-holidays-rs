@@ -20,7 +20,9 @@
 //! ```no_run
 //! use govuk_bank_holidays::prelude::*;
 //!
-//! # async fn demo(date: Date) {
+//! # async fn demo() {
+//! let date = Date::today();
+//!
 //! // load bank holidays from GOV.UK
 //! let calendar = BankHolidayCalendar::load().await;
 //!
@@ -77,12 +79,12 @@ mod tests {
 
     fn test(calendar: BankHolidayCalendar<MonToFriWorkDays>) {
         let date = Date::try_from_components(2023, 1, 10)
-            .expect("Date should be valid");
+            .expect("date should be valid");
         assert!(calendar.is_work_day(date, None));
         assert!(!calendar.is_holiday(date, None));
 
         let date = Date::try_from_components(2022, 1, 1)
-            .expect("Date should be valid");
+            .expect("date should be valid");
         let holidays = calendar.iter_holidays_after(date, Some(Division::EnglandAndWales));
         for bank_holiday in holidays {
             // eprintln!("Holidays after 1/1/22: {:?}", bank_holiday);
@@ -90,7 +92,7 @@ mod tests {
         }
 
         let date = Date::try_from_components(2022, 1, 7)
-            .expect("Date should be valid");
+            .expect("date should be valid");
         let mut work_days = calendar.iter_work_days_before(date, Some(Division::EnglandAndWales));
         for _ in 0..10 {
             let work_day = work_days.next().unwrap();
@@ -111,7 +113,7 @@ mod tests {
     #[ignore]
     async fn requested() {
         let data_source = Reqwest::default().load_data_source().await
-            .expect("Bank holidays did not load");
+            .expect("bank holidays should load");
         let calendar = BankHolidayCalendar::new(data_source);
         test(calendar);
     }
@@ -130,7 +132,7 @@ mod tests {
 
         // check days of whole month are correctly flagged as work days or not
         let mut date = Date::try_from_components(2024, 2, 1)
-            .expect("Date should be valid");
+            .expect("date should be valid");
         let work_days_february_2024 = std::iter::from_fn(move || {
             let is_work_day = calendar.is_work_day(date, Some(Division::Scotland));
             date = date.next_day();

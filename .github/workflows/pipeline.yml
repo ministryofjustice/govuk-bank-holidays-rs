@@ -48,18 +48,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Set version from release tag
-        run: |
-          release_tag='${{ github.event.release.tag_name }}'
-          echo "Release tag $release_tag"
-          echo $release_tag | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' || {
-            echo 'Release tag must be in the form \d+\.\d+\.\d+'
-            false
-          }
-          version=${release_tag}
-          echo "Will publish version $version"
-          grep -q 'version = "'$version'"' Cargo.toml
-          echo "version=$version" >> "$GITHUB_ENV"
       - name: Install rust toolchain
         uses: dtolnay/rust-toolchain@stable
       - name: Publish to crates.io

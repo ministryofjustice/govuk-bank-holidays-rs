@@ -25,7 +25,7 @@ mod tests {
     #[test]
     fn mon_to_fri() {
         let mut date = Date::try_from_components(2024, 1, 1)
-            .expect("Date should be valid");
+            .expect("date should be valid");
         let weekdays_january_2024 = std::iter::from_fn(move || {
             let is_weekday = WorkDays::is_work_day(&MonToFriWorkDays, date);
             date = date.next_day();

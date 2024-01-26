@@ -20,6 +20,10 @@ division (`Some(Division)`) or only those that are **common** to all divisions f
 Using the library
 -----------------
 
+![github](https://github.com/ministryofjustice/govuk-bank-holidays-rs/actions/workflows/pipeline.yml/badge.svg?branch=main)
+![crates.io](https://img.shields.io/crates/v/govuk-bank-holidays)
+![docs.rs](https://img.shields.io/docsrs/govuk-bank-holidays)
+
 Add to your project with:
 
 ```shell
@@ -46,13 +50,14 @@ TODO
 ----
 
 - Better tests, coverage
-- Improve GitHub Actions pipeline
-  - Publish to docs.rs
-  - Use `cargo-semver-checks`
-- Performance improvements (particularly around memory and iterators)
-- Can `DataSource` be made private, exposing methods on `LoadDataSource` trait or elsewhere?
 - Optionally merge in older known bank holidays into newly-downloaded GOV.UK data? Cached data starts in 2012,
   but currently GOV.UK provides nothing before 2018.
+- Improve GitHub Actions pipeline
+  - Put test, lint & publish steps into 1 job for better reuse of downloaded toolchain and build caches?
+  - Use `cargo-semver-checks`
+- Performance improvements (particularly around memory and iterators)
+- Relax rust version restriction (MSRV)?
+- Can `DataSource` be made private, exposing methods on `LoadDataSource` trait or elsewhere?
 - Allow for unknown “divisions”? Make enum non-exhaustive?
 
 References

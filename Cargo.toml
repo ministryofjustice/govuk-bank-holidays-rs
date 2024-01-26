@@ -15,6 +15,9 @@ exclude = [
     "Justfile",
 ]
 
+[package.metadata.docs.rs]
+targets = []
+
 [features]
 default = ["chrono"]
 chrono = ["dep:chrono"]

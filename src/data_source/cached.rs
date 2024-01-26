@@ -9,6 +9,6 @@ impl Cached {
     pub fn cached_data_source() -> DataSource {
         const CACHED_DATA: &[u8] = include_bytes!("bank-holidays.json");
         DataSource::try_from_json(CACHED_DATA)
-            .expect("Cached data is invalid")
+            .expect("cached data should be valid")
     }
 }
