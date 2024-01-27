@@ -71,5 +71,8 @@ See also:
 History
 -------
 
+### 0.1.1
+Very minor changes – tidier code and improved documentation.
+
 ### 0.1.0
 Initial release with API likely to be unstable.

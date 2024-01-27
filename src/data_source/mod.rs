@@ -155,8 +155,8 @@ mod tests {
     use super::*;
     use crate::{BankHolidayCalendar, Date, Weekday};
 
-    #[tokio::test]
-    async fn custom_data_source_loader() {
+    #[test]
+    fn manual_data_source() {
         let new_year_2024_to_2030: Vec<_> = (2024..2031)
             .map(|year| {
                 let mut holiday = Date::try_from_components(year, 1, 1).unwrap();

@@ -75,7 +75,6 @@ pub const SOURCE_URL: &str = "https://www.gov.uk/bank-holidays.json";
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::data_source::{Cached, Reqwest};
 
     fn test(calendar: BankHolidayCalendar<MonToFriWorkDays>) {
         let date = Date::try_from_components(2023, 1, 10)
@@ -102,20 +101,15 @@ mod tests {
         }
     }
 
-    #[tokio::test]
-    async fn cached() {
-        let data_source = Cached::cached_data_source();
-        let calendar = BankHolidayCalendar::new(data_source);
-        test(calendar);
+    #[test]
+    fn cached() {
+        test(BankHolidayCalendar::cached());
     }
 
     #[tokio::test]
     #[ignore]
     async fn requested() {
-        let data_source = Reqwest::default().load_data_source().await
-            .expect("bank holidays should load");
-        let calendar = BankHolidayCalendar::new(data_source);
-        test(calendar);
+        test(BankHolidayCalendar::load().await);
     }
 
     #[tokio::test]
@@ -142,13 +136,9 @@ mod tests {
         assert!(work_days_february_2024.eq(expected)); // there are no bank holidays in Scotland this month
     }
 
-    fn cached_calendar() -> BankHolidayCalendar<MonToFriWorkDays> {
-        BankHolidayCalendar::new(Cached::cached_data_source())
-    }
-
     #[test]
     fn next_holiday() {
-        let calendar = cached_calendar();
+        let calendar = BankHolidayCalendar::cached();
         let date = Date::try_from_components(2016, 1, 2).unwrap();
 
         let mut holidays = calendar.iter_holidays_after(date, None).
@@ -166,7 +156,7 @@ mod tests {
 
     #[test]
     fn previous_holiday() {
-        let calendar = cached_calendar();
+        let calendar = BankHolidayCalendar::cached();
         let date = Date::try_from_components(2016, 1, 5).unwrap();
 
         let mut holidays = calendar.iter_holidays_before(date, None)
@@ -184,7 +174,7 @@ mod tests {
 
     #[test]
     fn holiday_check() {
-        let calendar = cached_calendar();
+        let calendar = BankHolidayCalendar::cached();
         let is_holiday = calendar.is_holiday(Date::try_from_components(2012, 1, 2).unwrap(), None);
         assert!(is_holiday);
         let is_holiday = calendar.is_holiday(Date::try_from_components(2016, 1, 4).unwrap(), None);
@@ -195,7 +185,7 @@ mod tests {
 
     #[test]
     fn next_work_day() {
-        let calendar = cached_calendar();
+        let calendar = BankHolidayCalendar::cached();
 
         let mut work_days = calendar.iter_work_days_after(Date::try_from_components(2017, 12, 19).unwrap(), None)
             .map(Date::into_components);
@@ -221,7 +211,7 @@ mod tests {
 
     #[test]
     fn previous_work_day() {
-        let calendar = cached_calendar();
+        let calendar = BankHolidayCalendar::cached();
 
         let mut work_days = calendar.iter_work_days_before(Date::try_from_components(2018, 1, 3).unwrap(), None)
             .map(Date::into_components);
@@ -251,7 +241,7 @@ mod tests {
 
     #[test]
     fn number_of_bank_holidays() {
-        let calendar = cached_calendar();
+        let calendar = BankHolidayCalendar::cached();
         let expectation = [
             (None, 32),
             (Some(Division::EnglandAndWales), 42),
@@ -281,7 +271,7 @@ mod tests {
 
     #[test]
     fn bank_holidays_in_divisions() {
-        let calendar = cached_calendar();
+        let calendar = BankHolidayCalendar::cached();
         let expectation = [
             (None, "Christmas Day", true),
             (Some(Division::EnglandAndWales), "Christmas Day", true),
