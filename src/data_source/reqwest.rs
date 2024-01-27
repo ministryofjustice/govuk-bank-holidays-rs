@@ -1,5 +1,5 @@
 use crate::Error;
-use super::DataSource;
+use super::{DataSource, LoadDataSource};
 
 /// Loads bank holidays from a URL in JSON format.
 /// Uses the `reqwest` client.
@@ -34,5 +34,11 @@ impl<'a> Reqwest<'a> {
                 data_source
             })
             .map_err(Error::from)
+    }
+}
+
+impl<'a> LoadDataSource for Reqwest<'a> {
+    async fn load_data_source(&self) -> Result<DataSource, Error> {
+        self.load_data_source().await
     }
 }
