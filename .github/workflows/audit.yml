@@ -1,0 +1,28 @@
+name: Audit
+on:
+  push:
+    paths:
+      - '.github/workflows/audit.yml'
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - '**/audit.toml'
+  schedule:
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: Audit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Audit dependencies
+        uses: actions-rust-lang/audit@v1

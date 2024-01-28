@@ -22,6 +22,18 @@ docs *args:
     rm -rf target/doc
     cargo doc --lib --no-deps {{ args }}
 
+# audit dependencies
+audit *args:
+    cargo install cargo-audit
+    cargo audit {{ args }}
+
+# check semver changes
+semver *args:
+    cargo install cargo-semver-checks
+    cargo semver-checks check-release --default-features {{ args }}
+    cargo semver-checks check-release --only-explicit-features --features chrono {{ args }}
+    cargo semver-checks check-release --only-explicit-features --features time {{ args }}
+
 # clean built binaries and dependencies
 clean:
     cargo clean
