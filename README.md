@@ -44,7 +44,8 @@ Developing library
 
 - Update version in `Cargo.toml`
 - Add to [History](#history) with changes since last release
-- Tag and publish a release on GitHub which triggers publishing to [crates.io](http://crates.io/crates/govuk-bank-holidays)
+- Tag and [publish a release on GitHub](https://github.com/ministryofjustice/govuk-bank-holidays-rs/releases)
+  which triggers publishing to [crates.io](http://crates.io/crates/govuk-bank-holidays)
 
 TODO
 ----
