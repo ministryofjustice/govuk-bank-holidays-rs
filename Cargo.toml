@@ -1,11 +1,11 @@
 [package]
 name = "govuk-bank-holidays"
-version = "0.1.1"
-description = "Library for loading the official list of bank holidays in the United Kingdom"
+version = "0.2.0"
+description = "Library for loading the official list of bank holidays in the United Kingdom from GOV.UK"
 authors = ["ushkarev <ushkarev@users.noreply.github.com>"]
 repository = "https://github.com/ministryofjustice/govuk-bank-holidays-rs"
 categories = ["date-and-time", "localization"]
-keywords = ["bank-holiday", "united-kingdom"]
+keywords = ["bank-holiday", "holiday", "united-kingdom"]
 license = "MIT"
 edition = "2021"
 rust-version = "1.75"

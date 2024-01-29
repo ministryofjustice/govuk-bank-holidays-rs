@@ -68,6 +68,9 @@ See also:
 History
 -------
 
+### 0.2.0
+Allow for custom sources of bank holidays using `LoadDataSource` trait.
+
 ### 0.1.1
 Very minor changes – tidier code and improved documentation.
 
