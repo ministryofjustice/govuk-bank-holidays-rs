@@ -15,6 +15,14 @@ mod reqwest;
 pub use cached::Cached;
 pub use reqwest::Reqwest;
 
+/// A trait to allow clients of the library to load bank holidays by other means.
+pub trait LoadDataSource {
+    /// Load a [`DataSource`] or return an [`Error`].
+    #[allow(async_fn_in_trait)]
+    // #[expect(async_fn_in_trait, reason = "auto trait bounds do not need specifying inside this library")]
+    async fn load_data_source(&self) -> Result<DataSource, Error>;
+}
+
 /// Represents a mapping of “divisions” to bank holidays.
 /// A concrete [`BankHolidayCalendar`](crate::BankHolidayCalendar) is built from this.
 /// Can be de/serialised from/to the JSON format used by [GOV.UK](https://www.gov.uk/bank-holidays.json).
@@ -155,32 +163,41 @@ mod tests {
     use super::*;
     use crate::{BankHolidayCalendar, Date, Weekday};
 
-    #[test]
-    fn manual_data_source() {
-        let new_year_2024_to_2030: Vec<_> = (2024..2031)
-            .map(|year| {
-                let mut holiday = Date::try_from_components(year, 1, 1).unwrap();
-                let mut notes = "";
-                while matches!(holiday.weekday(), Weekday::Saturday | Weekday::Sunday) {
-                    holiday = holiday.next_day();
-                    notes = "Substitute day";
-                }
-                BankHoliday {
-                    date: holiday,
-                    title: "New Year’s Day".to_owned(),
-                    notes: notes.to_owned(),
-                    bunting: false,
-                }
-            })
-            .collect();
-        let holiday_map: HashMap<_, _> = Division::all()
-            .into_iter()
-            .map(move |division| {
-                (division, new_year_2024_to_2030.clone())
-            })
-            .collect();
-        let data_source = DataSource::new(holiday_map);
-        let calendar = BankHolidayCalendar::new(data_source);
+    #[tokio::test]
+    async fn custom_loader() {
+        struct NewYearsDays;
+
+        impl LoadDataSource for NewYearsDays {
+            async fn load_data_source(&self) -> Result<DataSource, Error> {
+                let new_year_2024_to_2030: Vec<_> = (2024..2031)
+                    .map(|year| {
+                        let mut holiday = Date::try_from_components(year, 1, 1).unwrap();
+                        let mut notes = "";
+                        while matches!(holiday.weekday(), Weekday::Saturday | Weekday::Sunday) {
+                            holiday = holiday.next_day();
+                            notes = "Substitute day";
+                        }
+                        BankHoliday {
+                            date: holiday,
+                            title: "New Year’s Day".to_owned(),
+                            notes: notes.to_owned(),
+                            bunting: false,
+                        }
+                    })
+                    .collect();
+                let holiday_map: HashMap<_, _> = Division::all()
+                    .into_iter()
+                    .map(move |division| {
+                        (division, new_year_2024_to_2030.clone())
+                    })
+                    .collect();
+                let data_source = DataSource::new(holiday_map);
+                Ok(data_source)
+            }
+        }
+
+        let calendar = BankHolidayCalendar::custom(NewYearsDays).await
+            .expect("calendar should load");
         let holidays = calendar.holidays(None);
         assert_eq!(holidays.len(), 2031 - 2024);
         assert!(holidays.iter().all(|holiday| {

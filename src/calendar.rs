@@ -1,8 +1,8 @@
 use std::collections::{HashMap, HashSet};
 use std::iter::FusedIterator;
 
-use crate::{BankHoliday, Date, Division, MonToFriWorkDays, WorkDays};
-use crate::data_source::{Cached, DataSource, Reqwest};
+use crate::{BankHoliday, Date, Division, Error, MonToFriWorkDays, WorkDays};
+use crate::data_source::{Cached, DataSource, LoadDataSource, Reqwest};
 
 /// Calendar of known bank holidays.
 ///
@@ -29,10 +29,10 @@ impl BankHolidayCalendar<MonToFriWorkDays> {
         Self::cached_with(MonToFriWorkDays)
     }
 
-    /// Build a calendar from a [`DataSource`] and Monday to Friday work week.
+    /// Build with a custom source of bank holidays, using a Monday to Friday work week.
     #[inline]
-    pub fn new(data_source: DataSource) -> Self {
-        Self::new_with(data_source, MonToFriWorkDays)
+    pub async fn custom<T: LoadDataSource>(loader: T) -> Result<Self, Error> {
+        Self::custom_with(loader, MonToFriWorkDays).await
     }
 }
 
@@ -45,17 +45,23 @@ impl<W: WorkDays> BankHolidayCalendar<W> {
             tracing::info!("Falling back to cached calendar data");
             Cached::cached_data_source()
         });
-        Self::new_with(data_source, work_days)
+        Self::new(data_source, work_days)
     }
 
     /// Build from cached/embedded data, using given [`WorkDays`].
     #[inline]
     pub fn cached_with(work_days: W) -> Self {
-        Self::new_with(Cached::cached_data_source(), work_days)
+        Self::new(Cached::cached_data_source(), work_days)
     }
 
-    /// Build a calendar from a [`DataSource`] and given [`WorkDays`].
-    pub fn new_with(data_source: DataSource, work_days: W) -> Self {
+    /// Build with a custom source of bank holidays, using given [`WorkDays`].
+    pub async fn custom_with<T: LoadDataSource>(loader: T, work_days: W) -> Result<Self, Error> {
+        loader.load_data_source().await
+            .map(|data_source| Self::new(data_source, work_days))
+    }
+
+    /// Private method to build a calendar from a [`DataSource`] and given [`WorkDays`].
+    fn new(data_source: DataSource, work_days: W) -> Self {
         let holiday_map = data_source.into_inner();
         let holidays_common_to_all_divisions = holiday_map.values()
             .fold(None, |common: Option<HashSet<Date>>, bank_holidays| {

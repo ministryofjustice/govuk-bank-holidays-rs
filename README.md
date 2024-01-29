@@ -44,7 +44,8 @@ Developing library
 
 - Update version in `Cargo.toml`
 - Add to [History](#history) with changes since last release
-- Tag and publish a release on GitHub which triggers publishing to [crates.io](http://crates.io/crates/govuk-bank-holidays)
+- Tag and [publish a release on GitHub](https://github.com/ministryofjustice/govuk-bank-holidays-rs/releases)
+  which triggers publishing to [crates.io](http://crates.io/crates/govuk-bank-holidays)
 
 TODO
 ----
@@ -52,11 +53,7 @@ TODO
 - Better tests, coverage
 - Optionally merge in older known bank holidays into newly-downloaded GOV.UK data? Cached data starts in 2012,
   but currently GOV.UK provides nothing before 2018.
-- Improve GitHub Actions pipeline
-  - Put test, lint & publish steps into 1 job for better reuse of downloaded toolchain and build caches?
-  - Use `cargo-semver-checks`
 - Performance improvements (particularly around memory and iterators)
-- Relax rust version restriction (MSRV)?
 - Can `DataSource` be made private, exposing methods on `LoadDataSource` trait or elsewhere?
 - Allow for unknown “divisions”? Make enum non-exhaustive?
 

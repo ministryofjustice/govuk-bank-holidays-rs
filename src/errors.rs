@@ -14,4 +14,8 @@ pub enum Error {
     /// Date is invalid.
     #[error("Invalid date")]
     InvalidDate,
+
+    /// Another kind of error – useful for custom [`LoadDataSource`](crate::data_source::LoadDataSource) implementations.
+    #[error("{0}")]
+    Generic(&'static str),
 }
