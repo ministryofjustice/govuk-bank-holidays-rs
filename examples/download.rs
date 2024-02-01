@@ -6,7 +6,7 @@
 //! ```
 
 use std::fs::File;
-use std::io::{BufReader, Write};
+use std::io::{BufReader, stderr, Write};
 use std::path::Path;
 
 use tracing_subscriber::{EnvFilter, filter::LevelFilter, prelude::*};
@@ -17,7 +17,8 @@ use govuk_bank_holidays::data_source::DataSource;
 #[tokio::main]
 async fn main() {
     tracing_subscriber::registry()
-        .with(tracing_subscriber::fmt::layer())
+        .with(tracing_subscriber::fmt::layer()
+            .with_writer(stderr))
         .with(EnvFilter::builder()
             .with_default_directive(LevelFilter::DEBUG.into())
             .from_env_lossy())
