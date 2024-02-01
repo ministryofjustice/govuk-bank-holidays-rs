@@ -1,4 +1,5 @@
 //! Demo command line tool that uses the bank holiday library
+use std::io::stderr;
 
 use tracing_subscriber::{EnvFilter, filter::LevelFilter, prelude::*};
 
@@ -7,7 +8,8 @@ use govuk_bank_holidays::prelude::*;
 #[tokio::main]
 async fn main() {
     tracing_subscriber::registry()
-        .with(tracing_subscriber::fmt::layer())
+        .with(tracing_subscriber::fmt::layer()
+            .with_writer(stderr))
         .with(EnvFilter::builder()
             .with_default_directive(LevelFilter::DEBUG.into())
             .from_env_lossy())
