@@ -37,11 +37,11 @@ tokio = { version = "^1.35", features = ["macros", "rt-multi-thread", "test-util
 tracing-subscriber = { version = "^0.3", features = ["env-filter", "json", "local-time"] }
 
 [lints.rust]
-future_incompatible = "warn"
-nonstandard_style = "warn"
+future_incompatible = { level = "warn", priority = -1 }
+nonstandard_style = { level = "warn", priority = -1 }
+rust_2018_idioms = { level = "warn", priority = -1 }
+unused = { level = "warn", priority = -1 }
 missing_docs = "warn"
-rust_2018_idioms = "warn"
-unused = "warn"
 unused_import_braces = "warn"
 unused_must_use = "deny"
 
