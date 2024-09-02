@@ -33,7 +33,7 @@ time = { version = "^0.3", features = ["local-offset", "serde-human-readable"], 
 tracing = "^0.1"
 
 [dev-dependencies]
-tokio = { version = "^1.35", features = ["macros", "rt-multi-thread", "test-util", "tracing"] }
+tokio = { version = "^1.40", features = ["macros", "rt-multi-thread", "test-util", "tracing"] }
 tracing-subscriber = { version = "^0.3", features = ["env-filter", "json", "local-time"] }
 
 [lints.rust]
