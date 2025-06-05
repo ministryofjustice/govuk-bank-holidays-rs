@@ -40,6 +40,13 @@ Developing library
 - rust 1.75+ (using [rustup](https://rustup.rs/) is recommended)
 - [just](https://just.systems/man/en/) – for scripted shortcuts; like `make`
 
+### Making changes
+
+Run unit tests with `just test`.
+Update cached bank holidays from GOV.UK using `just refresh-cache`.
+
+See `just` for other scripted shortcuts.
+
 ### Releasing a new version
 
 - Update version in `Cargo.toml`
@@ -68,8 +75,11 @@ See also:
 History
 -------
 
+### 0.2.2
+Updated cached bank holidays.
+
 ### 0.2.1
-Updated dependencies
+Updated dependencies.
 
 ### 0.2.0
 Allow for custom sources of bank holidays using `LoadDataSource` trait.

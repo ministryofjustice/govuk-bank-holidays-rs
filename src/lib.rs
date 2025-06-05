@@ -253,19 +253,19 @@ mod tests {
                 .into_iter()
                 .filter(|holiday| holidays_2018_to_2022(holiday))
                 .count();
-            assert_eq!(holiday_count, expected_count, "Unexpected number of bank holidays in {:?}", division);
+            assert_eq!(holiday_count, expected_count, "Unexpected number of bank holidays in {division:?}");
 
             let end_of_2017 = Date::try_from_components(2017, 12, 31).unwrap();
             let holiday_count = calendar.iter_holidays_after(end_of_2017, division)
                 .filter(|holiday| holidays_2018_to_2022(holiday))
                 .count();
-            assert_eq!(holiday_count, expected_count, "Unexpected number of bank holidays in {:?}", division);
+            assert_eq!(holiday_count, expected_count, "Unexpected number of bank holidays in {division:?}");
 
             let start_of_2023 = Date::try_from_components(2023, 1, 1).unwrap();
             let holiday_count = calendar.iter_holidays_before(start_of_2023, division)
                 .filter(|holiday| holidays_2018_to_2022(holiday))
                 .count();
-            assert_eq!(holiday_count, expected_count, "Unexpected number of bank holidays in {:?}", division);
+            assert_eq!(holiday_count, expected_count, "Unexpected number of bank holidays in {division:?}");
         }
     }
 
@@ -289,7 +289,7 @@ mod tests {
             let bank_holiday_found = calendar.holidays(division).iter()
                 .filter(|holiday| holidays_2018_to_2022(holiday))
                 .any(|holiday| holiday.title.as_str() == title);
-            assert_eq!(bank_holiday_found, expect_exists, "Expect “{title}” to exist in {:?}: {expect_exists}", division);
+            assert_eq!(bank_holiday_found, expect_exists, "Expect “{title}” to exist in {division:?}: {expect_exists}");
         }
     }
 }

@@ -745,6 +745,54 @@
         "title": "Boxing Day",
         "notes": "Substitute day",
         "bunting": true
+      },
+      {
+        "date": "2027-01-01",
+        "title": "New Year’s Day",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2027-03-26",
+        "title": "Good Friday",
+        "notes": "",
+        "bunting": false
+      },
+      {
+        "date": "2027-03-29",
+        "title": "Easter Monday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2027-05-03",
+        "title": "Early May bank holiday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2027-05-31",
+        "title": "Spring bank holiday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2027-08-30",
+        "title": "Summer bank holiday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2027-12-27",
+        "title": "Christmas Day",
+        "notes": "Substitute day",
+        "bunting": true
+      },
+      {
+        "date": "2027-12-28",
+        "title": "Boxing Day",
+        "notes": "Substitute day",
+        "bunting": true
       }
     ]
   },
@@ -1581,6 +1629,60 @@
       },
       {
         "date": "2026-12-28",
+        "title": "Boxing Day",
+        "notes": "Substitute day",
+        "bunting": true
+      },
+      {
+        "date": "2027-01-01",
+        "title": "New Year’s Day",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2027-01-04",
+        "title": "2nd January",
+        "notes": "Substitute day",
+        "bunting": true
+      },
+      {
+        "date": "2027-03-26",
+        "title": "Good Friday",
+        "notes": "",
+        "bunting": false
+      },
+      {
+        "date": "2027-05-03",
+        "title": "Early May bank holiday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2027-05-31",
+        "title": "Spring bank holiday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2027-08-02",
+        "title": "Summer bank holiday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2027-11-30",
+        "title": "St Andrew’s Day",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2027-12-27",
+        "title": "Christmas Day",
+        "notes": "Substitute day",
+        "bunting": true
+      },
+      {
+        "date": "2027-12-28",
         "title": "Boxing Day",
         "notes": "Substitute day",
         "bunting": true
@@ -2510,6 +2612,66 @@
       },
       {
         "date": "2026-12-28",
+        "title": "Boxing Day",
+        "notes": "Substitute day",
+        "bunting": true
+      },
+      {
+        "date": "2027-01-01",
+        "title": "New Year’s Day",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2027-03-17",
+        "title": "St Patrick’s Day",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2027-03-26",
+        "title": "Good Friday",
+        "notes": "",
+        "bunting": false
+      },
+      {
+        "date": "2027-03-29",
+        "title": "Easter Monday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2027-05-03",
+        "title": "Early May bank holiday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2027-05-31",
+        "title": "Spring bank holiday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2027-07-12",
+        "title": "Battle of the Boyne (Orangemen’s Day)",
+        "notes": "",
+        "bunting": false
+      },
+      {
+        "date": "2027-08-30",
+        "title": "Summer bank holiday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2027-12-27",
+        "title": "Christmas Day",
+        "notes": "Substitute day",
+        "bunting": true
+      },
+      {
+        "date": "2027-12-28",
         "title": "Boxing Day",
         "notes": "Substitute day",
         "bunting": true

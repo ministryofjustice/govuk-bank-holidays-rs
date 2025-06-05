@@ -7,7 +7,7 @@ repository = "https://github.com/ministryofjustice/govuk-bank-holidays-rs"
 categories = ["date-and-time", "localization"]
 keywords = ["bank-holiday", "holiday", "united-kingdom"]
 license = "MIT"
-edition = "2021"
+edition = "2021"  # 2024 requires 1.85+ and that's a bit too new
 rust-version = "1.75"
 exclude = [
     ".editorconfig",

@@ -12,10 +12,10 @@ test *args:
     cargo test --no-default-features --features time -- {{ args }}
 
 # run code lint tools with various feature combinations
-lint:
-    cargo clippy --tests --examples
-    cargo clippy --tests --examples --no-default-features --features chrono
-    cargo clippy --tests --examples --no-default-features --features time
+lint *args:
+    cargo clippy --tests --examples {{ args }}
+    cargo clippy --tests --examples --no-default-features --features chrono {{ args }}
+    cargo clippy --tests --examples --no-default-features --features time {{ args }}
 
 # generate documentation
 docs *args:
