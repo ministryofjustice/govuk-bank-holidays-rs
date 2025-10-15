@@ -15,14 +15,14 @@ Bank holidays differ around the UK. The GOV.UK source currently lists these for 
 - Northern Ireland
 
 Methods on `BankHolidayCalendar` that take a `division` parameter will consider bank holidays only for the provided
-division (`Some(Division)`) or only those that are **common** to all divisions for `None`.
+division (`Some(division)`) or only those that are **common** to all divisions for `None`.
 
 Using the library
 -----------------
 
-![github](https://github.com/ministryofjustice/govuk-bank-holidays-rs/actions/workflows/pipeline.yml/badge.svg?branch=main)
-![crates.io](https://img.shields.io/crates/v/govuk-bank-holidays)
-![docs.rs](https://img.shields.io/docsrs/govuk-bank-holidays)
+[![Test, lint & publish](https://github.com/ministryofjustice/govuk-bank-holidays-rs/actions/workflows/pipeline.yml/badge.svg)](https://github.com/ministryofjustice/govuk-bank-holidays-rs/actions/workflows/pipeline.yml)
+[![crates.io](https://img.shields.io/crates/v/govuk-bank-holidays)](http://crates.io/crates/govuk-bank-holidays)
+[![docs.rs](https://img.shields.io/docsrs/govuk-bank-holidays)](https://docs.rs/govuk-bank-holidays)
 
 Add to your project with:
 
@@ -35,10 +35,10 @@ See [docs.rs](https://docs.rs/govuk-bank-holidays) for API information, usage sa
 Developing library
 ------------------
 
-### Requirements
+### Dependencies
 
 - rust 1.75+ (using [rustup](https://rustup.rs/) is recommended)
-- [just](https://just.systems/man/en/) – for scripted shortcuts; like `make`
+- [just](https://just.systems/man/en/) (optional) – for scripted shortcuts, akin to `make`
 
 ### Making changes
 
@@ -57,12 +57,16 @@ See `just` for other scripted shortcuts.
 TODO
 ----
 
-- Better tests, coverage
 - Optionally merge in older known bank holidays into newly-downloaded GOV.UK data? Cached data starts in 2012,
-  but currently GOV.UK provides nothing before 2018.
+  but currently GOV.UK provides nothing before 2024.
+- Better tests, coverage
 - Performance improvements (particularly around memory and iterators)
-- Can `DataSource` be made private, exposing methods on `LoadDataSource` trait or elsewhere?
-- Allow for unknown “divisions”? Make enum non-exhaustive?
+- Loading data:
+  - Can `DataSource` be made private, exposing methods on `LoadDataSource` trait or elsewhere?
+  - Make `reqwest` an optional feature? This might allow for no-std calendar of baked-in bank holidays.
+- Divisions:
+  - Allow unifying all divisions such that all bank holiday are returned labelled with where they apply?
+  - Allow for unknown divisions? Make `Division` enum non-exhaustive?
 
 References
 ----------
@@ -74,6 +78,20 @@ See also:
 
 History
 -------
+
+### 0.3.0
+**Major breaking changes!**
+Bring-your-own date library: the implementation is now customisable
+and both `chrono` and `time` features can be used together.
+The api has received many changes, but client code should need relatively minor adaptation.
+
+Notable differences include:
+- The library is now generic over the date implementation using a new `PlainDate` trait.
+  It’s implemented for `chrono::NaiveDate` and `time::Date`, but consumers are able to use their own.
+- The date implementation is no longer expected to be `Copy`, `Display`, `serde::Deserialize` nor `serde::Serialize`.
+  A  simple internal serde implementation exists to work consistently for all date types.
+- `BankHolidayCalendar` methods accept borrowed dates, instead of owned one.
+- `BankHoliday` is now immutable.
 
 ### 0.2.3
 Updated cached bank holidays and dependencies.

@@ -7,9 +7,9 @@ pub enum Error {
     #[error("Parsing error")]
     Parsing(#[from] serde_json::Error),
 
-    /// Request error – bank holiday data could not be loaded.
-    #[error("Request error")]
-    Request(#[from] reqwest::Error),
+    /// Reqwest error – bank holiday data could not be loaded.
+    #[error("Reqwest error")]
+    Reqwest(#[from] reqwest::Error),
 
     /// Date is invalid.
     #[error("Invalid date")]

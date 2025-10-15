@@ -10,17 +10,28 @@ test *args:
     cargo test -- {{ args }}
     cargo test --no-default-features --features chrono -- {{ args }}
     cargo test --no-default-features --features time -- {{ args }}
+    cargo test --all-features -- {{ args }}
+    @# uncomment once there are some date-independent tests
+    @# cargo test --no-default-features -- {{ args }}
 
 # run code lint tools with various feature combinations
 lint *args:
-    cargo clippy --tests --examples {{ args }}
-    cargo clippy --tests --examples --no-default-features --features chrono {{ args }}
-    cargo clippy --tests --examples --no-default-features --features time {{ args }}
+    cargo clippy --lib --tests --examples {{ args }}
+    cargo clippy --lib --tests --examples --no-default-features --features chrono {{ args }}
+    cargo clippy --lib --tests --examples --no-default-features --features time {{ args }}
+    cargo clippy --lib --tests --examples --all-features {{ args }}
+    @# uncomment once there are some date-independent tests
+    @# cargo clippy --lib --tests --examples --no-default-features {{ args }}
+
+# generate coverage report
+coverage *args:
+    cargo install cargo-llvm-cov
+    cargo llvm-cov --all-features --lib --examples {{ args }}
 
 # generate documentation
 docs *args:
     rm -rf target/doc
-    cargo doc --lib --no-deps {{ args }}
+    cargo doc --lib --all-features --no-deps {{ args }}
 
 # audit dependencies
 audit *args:
@@ -33,6 +44,8 @@ semver *args:
     cargo semver-checks check-release --default-features {{ args }}
     cargo semver-checks check-release --only-explicit-features --features chrono {{ args }}
     cargo semver-checks check-release --only-explicit-features --features time {{ args }}
+    cargo semver-checks check-release --all-features {{ args }}
+    cargo semver-checks check-release --only-explicit-features {{ args }}
 
 # clean built binaries and dependencies
 clean:

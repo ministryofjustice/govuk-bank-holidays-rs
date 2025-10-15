@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use std::iter::FusedIterator;
 
-use crate::{BankHoliday, Date, Division, Error, MonToFriWorkDays, WorkDays};
+use crate::{BankHoliday, Division, Error, MonToFriWorkDays, PlainDate, WorkDays};
 use crate::data_source::{Cached, DataSource, LoadDataSource, Reqwest};
 
 /// Calendar of known bank holidays.
@@ -9,13 +9,13 @@ use crate::data_source::{Cached, DataSource, LoadDataSource, Reqwest};
 /// NB: Bank holidays vary between parts of the UK so GOV.UK provide separate lists for different “divisions”.
 /// Methods taking an [`Option<Division>`](Division) parameter will only consider bank holidays common to
 /// *all* divisions if `None` is provided.
-pub struct BankHolidayCalendar<W: WorkDays> {
-    holiday_map: HashMap<Division, Vec<BankHoliday>>,
+pub struct BankHolidayCalendar<Date: PlainDate, W: WorkDays<Date>> {
+    holiday_map: HashMap<Division, Vec<BankHoliday<Date>>>,
     holidays_common_to_all_divisions: HashSet<Date>,
     work_days: W,
 }
 
-impl BankHolidayCalendar<MonToFriWorkDays> {
+impl<Date: PlainDate> BankHolidayCalendar<Date, MonToFriWorkDays> {
     /// Load UK bank holidays from [GOV.UK](https://www.gov.uk/bank-holidays), falling back to cached/embedded data,
     /// using a Monday to Friday work week.
     #[inline]
@@ -31,12 +31,12 @@ impl BankHolidayCalendar<MonToFriWorkDays> {
 
     /// Build with a custom source of bank holidays, using a Monday to Friday work week.
     #[inline]
-    pub async fn custom<T: LoadDataSource>(loader: T) -> Result<Self, Error> {
+    pub async fn custom<T: LoadDataSource<Date>>(loader: T) -> Result<Self, Error> {
         Self::custom_with(loader, MonToFriWorkDays).await
     }
 }
 
-impl<W: WorkDays> BankHolidayCalendar<W> {
+impl<Date: PlainDate, W: WorkDays<Date>> BankHolidayCalendar<Date, W> {
     /// Load UK bank holidays from [GOV.UK](https://www.gov.uk/bank-holidays), falling back to cached/embedded data,
     /// using given [`WorkDays`].
     pub async fn load_with(work_days: W) -> Self {
@@ -55,37 +55,36 @@ impl<W: WorkDays> BankHolidayCalendar<W> {
     }
 
     /// Build with a custom source of bank holidays, using given [`WorkDays`].
-    pub async fn custom_with<T: LoadDataSource>(loader: T, work_days: W) -> Result<Self, Error> {
+    pub async fn custom_with<T: LoadDataSource<Date>>(loader: T, work_days: W) -> Result<Self, Error> {
         loader.load_data_source().await
             .map(|data_source| Self::new(data_source, work_days))
     }
 
     /// Private method to build a calendar from a [`DataSource`] and given [`WorkDays`].
-    fn new(data_source: DataSource, work_days: W) -> Self {
+    fn new(data_source: DataSource<Date>, work_days: W) -> Self {
         let holiday_map = data_source.into_inner();
         let holidays_common_to_all_divisions = holiday_map.values()
-            .fold(None, |common: Option<HashSet<Date>>, bank_holidays| {
+            .fold(None, |mut common: Option<HashSet<&Date>>, bank_holidays| {
                 let dates: HashSet<_> = bank_holidays.iter()
-                    .map(|bank_holiday| bank_holiday.date)
+                    .map(|bank_holiday| bank_holiday.date())
                     .collect();
-                if let Some(common) = common {
-                    let common: HashSet<_> = common.intersection(&dates)
-                        .copied()
-                        .collect();
-                    Some(common)
+                if let Some(common) = common.as_mut() {
+                    *common = common.intersection(&dates).copied().collect();
                 } else {
-                    Some(dates)
+                    common = Some(dates);
                 }
+                common
             })
             .unwrap_or_else(|| {
                 tracing::warn!("Empty bank holiday calendar");
                 HashSet::new()
             });
+        let holidays_common_to_all_divisions = holidays_common_to_all_divisions.into_iter().cloned().collect();
         BankHolidayCalendar { holiday_map, holidays_common_to_all_divisions, work_days }
     }
 
     /// Get all known holidays in given `division` of the UK or only those common to all divisions.
-    pub fn holidays(&self, division: Option<Division>) -> Vec<&BankHoliday> {
+    pub fn holidays(&self, division: Option<Division>) -> Vec<&BankHoliday<Date>> {
         let mut holidays = Vec::new();
         if let Some(division) = division {
             if let Some(bank_holidays) = self.holiday_map.get(&division) {
@@ -98,7 +97,7 @@ impl<W: WorkDays> BankHolidayCalendar<W> {
                 holidays.extend(
                     bank_holidays.iter()
                         .filter(|bank_holiday| {
-                            self.holidays_common_to_all_divisions.contains(&bank_holiday.date)
+                            self.holidays_common_to_all_divisions.contains(bank_holiday.date())
                         })
                 );
             }
@@ -107,21 +106,21 @@ impl<W: WorkDays> BankHolidayCalendar<W> {
     }
 
     /// Checks whether `date` is a bank holiday in given `division` or common to all divisions.
-    pub fn is_holiday(&self, date: Date, division: Option<Division>) -> bool {
+    pub fn is_holiday(&self, date: &Date, division: Option<Division>) -> bool {
         if let Some(division) = division {
             self.holiday_map.get(&division)
                 .map(|bank_holidays| {
                     bank_holidays.iter()
-                        .any(|bank_holiday| bank_holiday.date == date)
+                        .any(|bank_holiday| bank_holiday.date() == date)
                 })
                 .unwrap_or(false)
         } else {
-            self.holidays_common_to_all_divisions.contains(&date)
+            self.holidays_common_to_all_divisions.contains(date)
         }
     }
 
     /// Checks whether `date` is a work day in given `division` or common to all divisions.
-    pub fn is_work_day(&self, date: Date, division: Option<Division>) -> bool {
+    pub fn is_work_day(&self, date: &Date, division: Option<Division>) -> bool {
         self.work_days.is_work_day(date) && !self.is_holiday(date, division)
     }
 
@@ -139,52 +138,52 @@ impl<W: WorkDays> BankHolidayCalendar<W> {
 
     /// Iterate over all known bank holidays _after_ a `date` in given `division` or common to all divisions.
     /// Iterator yields [`&BankHoliday`](BankHoliday).
-    pub fn iter_holidays_after(&self, date: Date, division: Option<Division>) -> HolidayIter<'_> {
+    pub fn iter_holidays_after(&self, date: &Date, division: Option<Division>) -> HolidayIter<'_, Date> {
         let holidays = self.holidays(division)
             .drain(..)
             .rev()
-            .filter(|bank_holiday| bank_holiday.date > date)
+            .filter(|bank_holiday| bank_holiday.date() > date)
             .collect();
         HolidayIter { holidays }
     }
 
     /// Iterate over all known bank holidays _before_ a `date` in given `division` or common to all divisions.
     /// Iterator yields [`&BankHoliday`](BankHoliday).
-    pub fn iter_holidays_before(&self, date: Date, division: Option<Division>) -> HolidayIter<'_> {
+    pub fn iter_holidays_before(&self, date: &Date, division: Option<Division>) -> HolidayIter<'_, Date> {
         let holidays = self.holidays(division)
             .drain(..)
-            .filter(|bank_holiday| bank_holiday.date < date)
+            .filter(|bank_holiday| bank_holiday.date() < date)
             .collect();
         HolidayIter { holidays }
     }
 
     /// Iterate over all work days _after_ a `date`, skipping bank holidays in given `division`
     /// or common to all divisions.
-    /// Iterator yields [`Date`].
+    /// Iterator yields [`PlainDate`] implementation.
     ///
     /// NB: this is an infinite iterator.
     #[inline]
-    pub fn iter_work_days_after(&self, date: Date, division: Option<Division>) -> WorkDayIter<'_, W> {
+    pub fn iter_work_days_after(&self, date: Date, division: Option<Division>) -> WorkDayIter<'_, Date, W> {
         WorkDayIter { calendar: self, date, division, forward: true }
     }
 
     /// Iterate over all work days _before_ a `date`, skipping bank holidays in given `division`
     /// or common to all divisions.
-    /// Iterator yields [`Date`].
+    /// Iterator yields [`PlainDate`] implementation.
     ///
     /// NB: this is an infinite iterator.
     #[inline]
-    pub fn iter_work_days_before(&self, date: Date, division: Option<Division>) -> WorkDayIter<'_, W> {
+    pub fn iter_work_days_before(&self, date: Date, division: Option<Division>) -> WorkDayIter<'_, Date, W> {
         WorkDayIter { calendar: self, date, division, forward: false }
     }
 }
 
-pub struct HolidayIter<'a> {
-    holidays: Vec<&'a BankHoliday>,
+pub struct HolidayIter<'a, Date: PlainDate> {
+    holidays: Vec<&'a BankHoliday<Date>>,
 }
 
-impl<'a> Iterator for HolidayIter<'a> {
-    type Item = &'a BankHoliday;
+impl<'a, Date: PlainDate> Iterator for HolidayIter<'a, Date> {
+    type Item = &'a BankHoliday<Date>;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.holidays.pop()
@@ -195,18 +194,18 @@ impl<'a> Iterator for HolidayIter<'a> {
     }
 }
 
-impl<'a> ExactSizeIterator for HolidayIter<'a> {}
+impl<'a, Date: PlainDate> ExactSizeIterator for HolidayIter<'a, Date> {}
 
-impl<'a> FusedIterator for HolidayIter<'a> {}
+impl<'a, Date: PlainDate> FusedIterator for HolidayIter<'a, Date> {}
 
-pub struct WorkDayIter<'a, W: WorkDays> {
-    calendar: &'a BankHolidayCalendar<W>,
+pub struct WorkDayIter<'a, Date: PlainDate, W: WorkDays<Date>> {
+    calendar: &'a BankHolidayCalendar<Date, W>,
     date: Date,
     division: Option<Division>,
     forward: bool,
 }
 
-impl<'a, W: WorkDays> WorkDayIter<'a, W> {
+impl<'a, Date: PlainDate, W: WorkDays<Date>> WorkDayIter<'a, Date, W> {
     fn advance_date(&mut self) {
         if self.forward {
             self.date = self.date.next_day()
@@ -216,14 +215,14 @@ impl<'a, W: WorkDays> WorkDayIter<'a, W> {
     }
 }
 
-impl<'a, W: WorkDays> Iterator for WorkDayIter<'a, W> {
+impl<'a, Date: PlainDate, W: WorkDays<Date>> Iterator for WorkDayIter<'a, Date, W> {
     type Item = Date;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.advance_date();
-        while !self.calendar.is_work_day(self.date, self.division) {
+        while !self.calendar.is_work_day(&self.date, self.division) {
             self.advance_date();
         }
-        Some(self.date)
+        Some(self.date.clone())
     }
 }
