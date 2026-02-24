@@ -793,6 +793,54 @@
         "title": "Boxing Day",
         "notes": "Substitute day",
         "bunting": true
+      },
+      {
+        "date": "2028-01-03",
+        "title": "New Year’s Day",
+        "notes": "Substitute day",
+        "bunting": true
+      },
+      {
+        "date": "2028-04-14",
+        "title": "Good Friday",
+        "notes": "",
+        "bunting": false
+      },
+      {
+        "date": "2028-04-17",
+        "title": "Easter Monday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2028-05-01",
+        "title": "Early May bank holiday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2028-05-29",
+        "title": "Spring bank holiday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2028-08-28",
+        "title": "Summer bank holiday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2028-12-25",
+        "title": "Christmas Day",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2028-12-26",
+        "title": "Boxing Day",
+        "notes": "",
+        "bunting": true
       }
     ]
   },
@@ -1685,6 +1733,60 @@
         "date": "2027-12-28",
         "title": "Boxing Day",
         "notes": "Substitute day",
+        "bunting": true
+      },
+      {
+        "date": "2028-01-03",
+        "title": "New Year’s Day",
+        "notes": "Substitute day",
+        "bunting": true
+      },
+      {
+        "date": "2028-01-04",
+        "title": "2nd January",
+        "notes": "Substitute day",
+        "bunting": true
+      },
+      {
+        "date": "2028-04-14",
+        "title": "Good Friday",
+        "notes": "",
+        "bunting": false
+      },
+      {
+        "date": "2028-05-01",
+        "title": "Early May bank holiday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2028-05-29",
+        "title": "Spring bank holiday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2028-08-07",
+        "title": "Summer bank holiday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2028-11-30",
+        "title": "St Andrew’s Day",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2028-12-25",
+        "title": "Christmas Day",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2028-12-26",
+        "title": "Boxing Day",
+        "notes": "",
         "bunting": true
       }
     ]
@@ -2674,6 +2776,66 @@
         "date": "2027-12-28",
         "title": "Boxing Day",
         "notes": "Substitute day",
+        "bunting": true
+      },
+      {
+        "date": "2028-01-03",
+        "title": "New Year’s Day",
+        "notes": "Substitute day",
+        "bunting": true
+      },
+      {
+        "date": "2028-03-17",
+        "title": "St Patrick’s Day",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2028-04-14",
+        "title": "Good Friday",
+        "notes": "",
+        "bunting": false
+      },
+      {
+        "date": "2028-04-17",
+        "title": "Easter Monday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2028-05-01",
+        "title": "Early May bank holiday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2028-05-29",
+        "title": "Spring bank holiday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2028-07-12",
+        "title": "Battle of the Boyne (Orangemen’s Day)",
+        "notes": "",
+        "bunting": false
+      },
+      {
+        "date": "2028-08-28",
+        "title": "Summer bank holiday",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2028-12-25",
+        "title": "Christmas Day",
+        "notes": "",
+        "bunting": true
+      },
+      {
+        "date": "2028-12-26",
+        "title": "Boxing Day",
+        "notes": "",
         "bunting": true
       }
     ]

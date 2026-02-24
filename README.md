@@ -75,6 +75,9 @@ See also:
 History
 -------
 
+### 0.2.3
+Updated cached bank holidays and dependencies.
+
 ### 0.2.2
 Updated cached bank holidays.
 
