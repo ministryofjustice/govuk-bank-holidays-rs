@@ -26,6 +26,6 @@ impl<Date: PlainDate> Cached<Date> {
 impl<Date: PlainDate> LoadDataSource<Date> for Cached<Date> {
     #[inline]
     async fn load_data_source(&self) -> Result<DataSource<Date>, Error> {
-        Ok(Cached::default().cached_data_source())
+        Ok(self.cached_data_source())
     }
 }
