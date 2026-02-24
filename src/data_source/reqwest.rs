@@ -23,9 +23,11 @@ impl<'a, Date: PlainDate> Reqwest<'a, Date> {
     pub const fn new(url: &'a str) -> Self {
         Self { url, _phantom: PhantomData }
     }
+}
 
-    /// Load bank holidays from URL.
-    pub async fn load_data_source(&self) -> Result<DataSource<Date>, Error> {
+impl<'a, Date: PlainDate> LoadDataSource<Date> for Reqwest<'a, Date> {
+    #[inline]
+    async fn load_data_source(&self) -> Result<DataSource<Date>, Error> {
         tracing::debug!("Loading bank holidays from {}", self.url);
         reqwest::get(self.url)
             .await?
@@ -37,12 +39,5 @@ impl<'a, Date: PlainDate> Reqwest<'a, Date> {
                 data_source
             })
             .map_err(Error::from)
-    }
-}
-
-impl<'a, Date: PlainDate> LoadDataSource<Date> for Reqwest<'a, Date> {
-    #[inline]
-    async fn load_data_source(&self) -> Result<DataSource<Date>, Error> {
-        self.load_data_source().await
     }
 }

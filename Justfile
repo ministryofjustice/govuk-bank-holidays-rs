@@ -44,8 +44,10 @@ semver *args:
     cargo semver-checks check-release --default-features {{ args }}
     cargo semver-checks check-release --only-explicit-features --features chrono {{ args }}
     cargo semver-checks check-release --only-explicit-features --features time {{ args }}
-    cargo semver-checks check-release --all-features {{ args }}
-    cargo semver-checks check-release --only-explicit-features {{ args }}
+    @# uncomment once all features can be enabled on _previous_ release
+    @# cargo semver-checks check-release --all-features {{ args }}
+    @# uncomment once all default features can be disabled on _previous_ release
+    @# cargo semver-checks check-release --only-explicit-features {{ args }}
 
 # clean built binaries and dependencies
 clean:

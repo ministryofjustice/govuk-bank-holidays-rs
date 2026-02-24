@@ -15,7 +15,7 @@ Bank holidays differ around the UK. The GOV.UK source currently lists these for 
 - Northern Ireland
 
 Methods on `BankHolidayCalendar` that take a `division` parameter will consider bank holidays only for the provided
-division (`Some(division)`) or only those that are **common** to all divisions for `None`.
+division (eg. `Some(Division::Scotland)`) or only those that are **common** to all divisions for `None`.
 
 Using the library
 -----------------
@@ -90,8 +90,9 @@ Notable differences include:
   It’s implemented for `chrono::NaiveDate` and `time::Date`, but consumers are able to use their own.
 - The date implementation is no longer expected to be `Copy`, `Display`, `serde::Deserialize` nor `serde::Serialize`.
   A  simple internal serde implementation exists to work consistently for all date types.
-- `BankHolidayCalendar` methods accept borrowed dates, instead of owned one.
+- Many `BankHolidayCalendar` methods now take borrowed dates, instead of owned ones.
 - `BankHoliday` is now immutable.
+- `Cached::cached_data_source` is now a method needing a default `Cached` instance.
 
 ### 0.2.3
 Updated cached bank holidays and dependencies.

@@ -13,7 +13,7 @@
 //! - Northern Ireland
 //!
 //! Methods on [`BankHolidayCalendar`] that take a `division` parameter will consider bank holidays only for the provided
-//! division ([`Some(division)`](Division)) or only those that are **common** to all divisions for `None`.
+//! division ([`Some(Division)`](Division)) or only those that are **common** to all divisions for `None`.
 //!
 //! ## Usage
 //!

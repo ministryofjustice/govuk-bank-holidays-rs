@@ -43,7 +43,7 @@ impl<Date: PlainDate, W: WorkDays<Date>> BankHolidayCalendar<Date, W> {
         let data_source = Reqwest::default().load_data_source().await.unwrap_or_else(|error| {
             tracing::error!("Failed to load bank holidays: {error}");
             tracing::info!("Falling back to cached calendar data");
-            Cached::cached_data_source()
+            Cached::default().cached_data_source()
         });
         Self::new(data_source, work_days)
     }
@@ -51,7 +51,7 @@ impl<Date: PlainDate, W: WorkDays<Date>> BankHolidayCalendar<Date, W> {
     /// Build from cached/embedded data, using given [`WorkDays`].
     #[inline]
     pub fn cached_with(work_days: W) -> Self {
-        Self::new(Cached::cached_data_source(), work_days)
+        Self::new(Cached::default().cached_data_source(), work_days)
     }
 
     /// Build with a custom source of bank holidays, using given [`WorkDays`].
