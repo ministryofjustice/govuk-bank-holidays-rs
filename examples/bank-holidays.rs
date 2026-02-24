@@ -15,8 +15,25 @@ async fn main() {
             .from_env_lossy())
         .init();
 
-    let today = Date::today();
+    #[cfg(feature = "chrono")]
+    {
+        let today = chrono::Local::now().date_naive();
+        demo(today).await
+    }
+    #[cfg(all(not(feature = "chrono"), feature = "time"))]
+    {
+        let today = time::OffsetDateTime::now_local().expect("cannot get now in local timezone").date();
+        demo(today).await
+    }
+    #[cfg(not(any(feature = "chrono", feature = "time")))]
+    {
+        eprintln!("No date implementation enabled; add chrono or time feature");
+        std::process::exit(1);
+    }
+}
 
+#[cfg(any(feature = "chrono", feature = "time"))]
+async fn demo<Date: PlainDate>(today: Date) {
     let mut args = std::env::args();
     let program = args.next()
         .and_then(|program| {
@@ -28,17 +45,17 @@ async fn main() {
     match args.next().as_deref() {
         Some("today") | None => {
             let calendar = BankHolidayCalendar::load().await;
-            let is_holiday = calendar.is_holiday(today, None);
+            let is_holiday = calendar.is_holiday(&today, None);
             if is_holiday {
-                println!("Today ({today}) is a bank holiday");
+                println!("Today ({today:?}) is a bank holiday");
             } else {
-                println!("Today ({today}) is not a bank holiday");
+                println!("Today ({today:?}) is not a bank holiday");
             }
         }
         Some("next") => {
             let calendar = BankHolidayCalendar::load().await;
-            if let Some(holiday) = calendar.iter_holidays_after(today, None).next() {
-                println!("The next bank holiday is {} ({})", holiday.title, holiday.date);
+            if let Some(holiday) = calendar.iter_holidays_after(&today, None).next() {
+                println!("The next bank holiday is {} ({:?})", holiday.title(), holiday.date());
             } else {
                 eprintln!("Next bank holiday cannot be determined");
                 std::process::exit(2);
@@ -46,8 +63,8 @@ async fn main() {
         }
         Some("previous") => {
             let calendar = BankHolidayCalendar::load().await;
-            if let Some(holiday) = calendar.iter_holidays_before(today, None).next() {
-                println!("The previous bank holiday was {} ({})", holiday.title, holiday.date);
+            if let Some(holiday) = calendar.iter_holidays_before(&today, None).next() {
+                println!("The previous bank holiday was {} ({:?})", holiday.title(), holiday.date());
             } else {
                 eprintln!("Previous bank holiday cannot be determined");
                 std::process::exit(2);

@@ -11,7 +11,7 @@ use std::path::Path;
 
 use tracing_subscriber::{EnvFilter, filter::LevelFilter, prelude::*};
 
-use govuk_bank_holidays::SOURCE_URL;
+use govuk_bank_holidays::{PlainDate, SOURCE_URL};
 use govuk_bank_holidays::data_source::DataSource;
 
 #[tokio::main]
@@ -43,14 +43,30 @@ async fn main() {
     }
 }
 
+#[cfg(feature = "chrono")]
 async fn download_to_path(url: &str, path: &str) -> Result<(), &'static str> {
+    download_to_path_impl::<chrono::NaiveDate>(url, path).await
+}
+
+#[cfg(all(not(feature = "chrono"), feature = "time"))]
+async fn download_to_path(url: &str, path: &str) -> Result<(), &'static str> {
+    download_to_path_impl::<time::Date>(url, path).await
+}
+
+#[cfg(not(any(feature = "chrono", feature = "time")))]
+async fn download_to_path(_url: &str, _path: &str) -> Result<(), &'static str> {
+    Err("No date implementation enabled; add chrono or time feature")
+}
+
+#[cfg(any(feature = "chrono", feature = "time"))]
+async fn download_to_path_impl<Date: PlainDate>(url: &str, path: &str) -> Result<(), &'static str> {
     let mut data = reqwest::get(url)
         .await
         .map_err(|error| {
             tracing::error!("{error}");
             "Could not download data"
         })?
-        .json::<DataSource>()
+        .json::<DataSource<Date>>()
         .await
         .map_err(|error| {
             tracing::error!("{error}");
@@ -65,7 +81,7 @@ async fn download_to_path(url: &str, path: &str) -> Result<(), &'static str> {
                 "Could not open existing file"
             })?;
         let file = BufReader::new(file);
-        let mut existing_data: DataSource = serde_json::from_reader(file)
+        let mut existing_data: DataSource<Date> = serde_json::from_reader(file)
             .map_err(|error| {
                 tracing::error!("{error}");
                 "Could not deserialise existing file"

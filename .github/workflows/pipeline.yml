@@ -19,14 +19,33 @@ env:
   CARGO_TERM_VERBOSE: 'true'
 
 jobs:
-  test:
-    name: Test
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
       - name: Install rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache-shared-key: shared
+      - name: Install just
+        run: cargo install just
+      - name: Install dependencies
+        run: cargo update
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Install rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache-shared-key: shared
       - name: Install just
         run: cargo install just
       - name: Run unit tests
@@ -35,6 +54,8 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    needs:
+      - build
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -51,11 +72,15 @@ jobs:
     name: Check semver changes
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
+    needs:
+      - build
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
       - name: Install rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache-shared-key: shared
       - name: Install just
         run: cargo install just
       - name: Check semver changes
@@ -64,17 +89,25 @@ jobs:
   publish:
     name: Publish crate
     runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      id-token: write
     needs:
-      - check-semver
       - test
       - lint
+      - check-semver
     if: github.event_name == 'release' && github.event.action == 'published'
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
       - name: Install rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache-shared-key: shared
+      - name: Authenticate with crates.io
+        uses: rust-lang/crates-io-auth-action@v1
+        id: auth
       - name: Publish to crates.io
-        run: cargo publish --token ${CARGO_REGISTRY_TOKEN}
+        run: cargo publish
         env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}

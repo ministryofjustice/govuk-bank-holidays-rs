@@ -16,8 +16,7 @@ pub enum Division {
 
 impl Division {
     /// Iterator over all known divisions.
-    #[inline]
-    pub fn all() -> [Division; 3] {
+    pub const fn all() -> [Division; 3] {
         [
             Division::EnglandAndWales,
             Division::Scotland,
@@ -26,7 +25,7 @@ impl Division {
     }
 
     /// English name of division.
-    pub fn name(self) -> &'static str {
+    pub const fn name(self) -> &'static str {
         match self {
             Division::EnglandAndWales => "England and Wales",
             Division::Scotland => "Scotland",
@@ -36,7 +35,7 @@ impl Division {
 }
 
 impl fmt::Display for Division {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str(self.name())
     }
 }
