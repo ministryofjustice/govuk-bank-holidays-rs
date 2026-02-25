@@ -35,7 +35,7 @@ tracing = "^0.1"
 
 [dev-dependencies]
 jiff = "^0.2"
-temporal_rs = "^0.1"
+temporal_rs = "^0.2"
 tokio = { version = "^1.49", features = ["macros", "rt-multi-thread", "test-util", "tracing"] }
 tracing-subscriber = { version = "^0.3", features = ["env-filter", "json", "local-time"] }
 
